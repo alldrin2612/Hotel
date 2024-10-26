@@ -156,141 +156,100 @@ def mainroot():
 
 		# Create a frame for the pool amenity
 		pool_frame = Frame(amenities_frame, bg='white')
-		pool_frame.pack(pady=10)
+		pool_frame.pack(side=LEFT, padx=20)
 
 		# Load and resize the pool image
 		path_pool = "images/Pool.jpg"
 		img_pool = Image.open(path_pool)
-		img_pool = img_pool.resize((200, 150), Image.LANCZOS)
+		img_pool = img_pool.resize((300, 200), Image.LANCZOS)
 		img_pool = ImageTk.PhotoImage(img_pool)
 
 		# Create a label for the pool image
 		pool_image_label = Label(pool_frame, image=img_pool, bg='white')
 		pool_image_label.image = img_pool
-		pool_image_label.pack(side=LEFT, padx=10)
+		pool_image_label.pack()
 
-		# Create a label for the pool description
-		pool_description = """
-		Enjoy our luxurious swimming pool!
-		
-		• Open daily from 6 AM to 10 PM
-		• Heated for year-round comfort
-		• Separate kids' pool available
-		• Poolside bar and snack service
-		"""
-		pool_text_label = Label(pool_frame, text=pool_description, font='msserif 12', bg='white', justify=LEFT)
-		pool_text_label.pack(side=LEFT, padx=10)
+		# Create a frame for the banquet hall amenity
+		hall_frame = Frame(amenities_frame, bg='white')
+		hall_frame.pack(side=LEFT, padx=20)
 
-		# Add buttons for pool reservation, checking availability, and unreserving
-		Button(amenities_frame, text="Reserve Pool", command=reserve_pool, bg='#00008B', fg='white', font='msserif 12').pack(pady=5)
-		Button(amenities_frame, text="Check Pool Availability", command=check_pool_availability, bg='#00008B', fg='white', font='msserif 12').pack(pady=5)
-		Button(amenities_frame, text="Unreserve Pool", command=unreserve_pool, bg='#00008B', fg='white', font='msserif 12').pack(pady=5)
+		# Load and resize the banquet hall image
+		path_hall = "images/Banq.jpg"
+		img_hall = Image.open(path_hall)
+		img_hall = img_hall.resize((300, 200), Image.LANCZOS)
+		img_hall = ImageTk.PhotoImage(img_hall)
+
+		# Create a label for the banquet hall image
+		hall_image_label = Label(hall_frame, image=img_hall, bg='white')
+		hall_image_label.image = img_hall
+		hall_image_label.pack()
+
+		# Add a common button for reservations
+		Button(amenities_frame, text="Make Reservation", command=make_reservation, bg='#00008B', fg='white', font='msserif 12').pack(pady=20)
 
 		# Add a back button to return to the main hotel status screen
-		Button(amenities_frame, text="Back to Hotel Status", command=hotel_status, bg='#00008B', fg='white', font='msserif 12').pack(pady=20)
+		Button(amenities_frame, text="Back to Hotel Status", command=hotel_status, bg='#00008B', fg='white', font='msserif 12').pack(pady=10)
 
-	def reserve_pool():
-		reserve_window = Toplevel(root)
-		reserve_window.title("Reserve Pool")
-		reserve_window.geometry("300x200")
-		reserve_window.configure(bg='white')
+	def make_reservation():
+		reservation_window = Toplevel(root)
+		reservation_window.title("Make Reservation")
+		reservation_window.geometry("300x250")
+		reservation_window.configure(bg='white')
 
-		Label(reserve_window, text="Reserve Pool", font='msserif 16 bold', bg='white').pack(pady=10)
+		Label(reservation_window, text="Make Reservation", font='msserif 16 bold', bg='white').pack(pady=10)
 
-		date_frame = Frame(reserve_window, bg='white')
+		# Dropdown for selecting amenity
+		amenity_var = StringVar(reservation_window)
+		amenity_var.set("Select Amenity")
+		amenity_dropdown = OptionMenu(reservation_window, amenity_var, "Pool", "Banquet Hall")
+		amenity_dropdown.pack(pady=5)
+
+		date_frame = Frame(reservation_window, bg='white')
 		date_frame.pack(pady=5)
 		Label(date_frame, text="Date:", bg='white').pack(side=LEFT)
 		date_entry = Entry(date_frame)
 		date_entry.pack(side=LEFT)
 
-		time_frame = Frame(reserve_window, bg='white')
+		time_frame = Frame(reservation_window, bg='white')
 		time_frame.pack(pady=5)
 		Label(time_frame, text="Time:", bg='white').pack(side=LEFT)
 		time_entry = Entry(time_frame)
 		time_entry.pack(side=LEFT)
 
 		def submit_reservation():
+			amenity = amenity_var.get()
 			date = date_entry.get()
 			time = time_entry.get()
-			if date and time:
-				# Here you would typically save this to a database
-				# For this example, we'll just show a message
-				messagebox.showinfo("Reservation Successful", f"Pool reserved for {date} at {time}")
-				reserve_window.destroy()
+			if amenity != "Select Amenity" and date and time:
+				messagebox.showinfo("Reservation Successful", f"{amenity} reserved for {date} at {time}")
+				reservation_window.destroy()
 			else:
-				messagebox.showerror("Error", "Please enter both date and time")
+				messagebox.showerror("Error", "Please fill all fields")
 
-		Button(reserve_window, text="Submit", command=submit_reservation, bg='#00008B', fg='white').pack(pady=10)
+		Button(reservation_window, text="Reserve", command=submit_reservation, bg='#00008B', fg='white').pack(pady=10)
+		Button(reservation_window, text="Check Availability", command=lambda: check_availability(amenity_var.get(), date_entry.get(), time_entry.get()), bg='#00008B', fg='white').pack(pady=5)
+		Button(reservation_window, text="Unreserve", command=lambda: unreserve(amenity_var.get(), date_entry.get(), time_entry.get()), bg='#00008B', fg='white').pack(pady=5)
 
-	def check_pool_availability():
-		check_window = Toplevel(root)
-		check_window.title("Check Pool Availability")
-		check_window.geometry("300x200")
-		check_window.configure(bg='white')
-
-		Label(check_window, text="Check Pool Availability", font='msserif 16 bold', bg='white').pack(pady=10)
-
-		date_frame = Frame(check_window, bg='white')
-		date_frame.pack(pady=5)
-		Label(date_frame, text="Date:", bg='white').pack(side=LEFT)
-		date_entry = Entry(date_frame)
-		date_entry.pack(side=LEFT)
-
-		time_frame = Frame(check_window, bg='white')
-		time_frame.pack(pady=5)
-		Label(time_frame, text="Time:", bg='white').pack(side=LEFT)
-		time_entry = Entry(time_frame)
-		time_entry.pack(side=LEFT)
-
-		def check_availability():
-			date = date_entry.get()
-			time = time_entry.get()
-			if date and time:
-				# Here you would typically check this against a database
-				# For this example, we'll just show a random availability
-				import random
-				is_available = random.choice([True, False])
-				if is_available:
-					messagebox.showinfo("Availability", f"The pool is available on {date} at {time}")
-				else:
-					messagebox.showinfo("Availability", f"Sorry, the pool is already reserved on {date} at {time}")
+	def check_availability(amenity, date, time):
+		if amenity != "Select Amenity" and date and time:
+			# Here you would typically check this against a database
+			# For this example, we'll just show a random availability
+			import random
+			is_available = random.choice([True, False])
+			if is_available:
+				messagebox.showinfo("Availability", f"The {amenity} is available on {date} at {time}")
 			else:
-				messagebox.showerror("Error", "Please enter both date and time")
+				messagebox.showinfo("Availability", f"Sorry, the {amenity} is already reserved on {date} at {time}")
+		else:
+			messagebox.showerror("Error", "Please fill all fields")
 
-		Button(check_window, text="Check", command=check_availability, bg='#00008B', fg='white').pack(pady=10)
-
-	def unreserve_pool():
-		unreserve_window = Toplevel(root)
-		unreserve_window.title("Unreserve Pool")
-		unreserve_window.geometry("300x200")
-		unreserve_window.configure(bg='white')
-
-		Label(unreserve_window, text="Unreserve Pool", font='msserif 16 bold', bg='white').pack(pady=10)
-
-		date_frame = Frame(unreserve_window, bg='white')
-		date_frame.pack(pady=5)
-		Label(date_frame, text="Date:", bg='white').pack(side=LEFT)
-		date_entry = Entry(date_frame)
-		date_entry.pack(side=LEFT)
-
-		time_frame = Frame(unreserve_window, bg='white')
-		time_frame.pack(pady=5)
-		Label(time_frame, text="Time:", bg='white').pack(side=LEFT)
-		time_entry = Entry(time_frame)
-		time_entry.pack(side=LEFT)
-
-		def submit_unreservation():
-			date = date_entry.get()
-			time = time_entry.get()
-			if date and time:
-				# Here you would typically remove this from a database
-				# For this example, we'll just show a message
-				messagebox.showinfo("Unreservation Successful", f"Pool reservation cancelled for {date} at {time}")
-				unreserve_window.destroy()
-			else:
-				messagebox.showerror("Error", "Please enter both date and time")
-
-		Button(unreserve_window, text="Unreserve", command=submit_unreservation, bg='#00008B', fg='white').pack(pady=10)
+	def unreserve(amenity, date, time):
+		if amenity != "Select Amenity" and date and time:
+			# Here you would typically remove this from a database
+			# For this example, we'll just show a message
+			messagebox.showinfo("Unreservation Successful", f"{amenity} reservation cancelled for {date} at {time}")
+		else:
+			messagebox.showerror("Error", "Please fill all fields")
 
 	#-------------- Guests --------------------------------------------------------------------------------------------------------------------------
 	def staff():
