@@ -7,6 +7,7 @@ from PIL import ImageTk,Image
 import os
 import sqlite3
 from tkinter import messagebox
+from tkcalendar import DateEntry
 now = datetime.datetime.now()
 #----------- importing sqlite for server side operations---------------------------------------------------------------------------------
 con = sqlite3.Connection('hm_proj.db')
@@ -154,46 +155,56 @@ def mainroot():
 		# Add a label to show it's the amenities screen
 		Label(amenities_frame, text='Hotel Amenities', font='msserif 20 bold', bg='white').pack(pady=20)
 
+		# Create a frame to hold both amenity frames
+		amenities_container = Frame(amenities_frame, bg='white')
+		amenities_container.pack()
+
 		# Create a frame for the pool amenity
-		pool_frame = Frame(amenities_frame, bg='white')
-		pool_frame.pack(side=LEFT, padx=20)
+		pool_frame = Frame(amenities_container, bg='white')
+		pool_frame.pack(side=LEFT, padx=40)
 
 		# Load and resize the pool image
 		path_pool = "images/Pool.jpg"
 		img_pool = Image.open(path_pool)
-		img_pool = img_pool.resize((300, 200), Image.LANCZOS)
+		img_pool = img_pool.resize((250, 150), Image.LANCZOS)
 		img_pool = ImageTk.PhotoImage(img_pool)
 
 		# Create a label for the pool image
+		Label(pool_frame, text="Pool", font='msserif 15 bold', bg='white').pack(pady=5)
 		pool_image_label = Label(pool_frame, image=img_pool, bg='white')
 		pool_image_label.image = img_pool
 		pool_image_label.pack()
 
 		# Create a frame for the banquet hall amenity
-		hall_frame = Frame(amenities_frame, bg='white')
-		hall_frame.pack(side=LEFT, padx=20)
+		hall_frame = Frame(amenities_container, bg='white')
+		hall_frame.pack(side=LEFT, padx=40)
 
 		# Load and resize the banquet hall image
 		path_hall = "images/Banq.jpg"
 		img_hall = Image.open(path_hall)
-		img_hall = img_hall.resize((300, 200), Image.LANCZOS)
+		img_hall = img_hall.resize((250, 150), Image.LANCZOS)
 		img_hall = ImageTk.PhotoImage(img_hall)
 
 		# Create a label for the banquet hall image
+		Label(hall_frame, text="Banquet Hall", font='msserif 15 bold', bg='white').pack(pady=5)
 		hall_image_label = Label(hall_frame, image=img_hall, bg='white')
 		hall_image_label.image = img_hall
 		hall_image_label.pack()
 
+		# Create a frame for buttons
+		button_frame = Frame(amenities_frame, bg='white')
+		button_frame.pack(pady=20)
+
 		# Add a common button for reservations
-		Button(amenities_frame, text="Make Reservation", command=make_reservation, bg='#00008B', fg='white', font='msserif 12').pack(pady=20)
+		Button(button_frame, text="Make Reservation", command=make_reservation, bg='#00008B', fg='white', font='msserif 12').pack(side=LEFT, padx=10)
 
 		# Add a back button to return to the main hotel status screen
-		Button(amenities_frame, text="Back to Hotel Status", command=hotel_status, bg='#00008B', fg='white', font='msserif 12').pack(pady=10)
+		Button(button_frame, text="Back to Hotel Status", command=hotel_status, bg='#00008B', fg='white', font='msserif 12').pack(side=LEFT, padx=10)
 
 	def make_reservation():
 		reservation_window = Toplevel(root)
 		reservation_window.title("Make Reservation")
-		reservation_window.geometry("300x250")
+		reservation_window.geometry("300x350")
 		reservation_window.configure(bg='white')
 
 		Label(reservation_window, text="Make Reservation", font='msserif 16 bold', bg='white').pack(pady=10)
@@ -201,55 +212,73 @@ def mainroot():
 		# Dropdown for selecting amenity
 		amenity_var = StringVar(reservation_window)
 		amenity_var.set("Select Amenity")
-		amenity_dropdown = OptionMenu(reservation_window, amenity_var, "Pool", "Banquet Hall")
+		amenity_dropdown = ttk.Combobox(reservation_window, textvariable=amenity_var, values=["Pool", "Banquet Hall"], state="readonly")
 		amenity_dropdown.pack(pady=5)
 
+		# Date picker
 		date_frame = Frame(reservation_window, bg='white')
 		date_frame.pack(pady=5)
 		Label(date_frame, text="Date:", bg='white').pack(side=LEFT)
-		date_entry = Entry(date_frame)
-		date_entry.pack(side=LEFT)
+		date_entry = DateEntry(date_frame, width=12, background='darkblue', foreground='white', borderwidth=2)
+		date_entry.pack(side=LEFT, padx=5)
 
-		time_frame = Frame(reservation_window, bg='white')
-		time_frame.pack(pady=5)
-		Label(time_frame, text="Time:", bg='white').pack(side=LEFT)
-		time_entry = Entry(time_frame)
-		time_entry.pack(side=LEFT)
+		# Time picker - From
+		time_frame_from = Frame(reservation_window, bg='white')
+		time_frame_from.pack(pady=5)
+		Label(time_frame_from, text="From:", bg='white').pack(side=LEFT)
+		hour_var_from = StringVar(reservation_window)
+		minute_var_from = StringVar(reservation_window)
+		hour_var_from.set("00")
+		minute_var_from.set("00")
+		ttk.Combobox(time_frame_from, textvariable=hour_var_from, values=[f"{i:02d}" for i in range(24)], width=5).pack(side=LEFT, padx=2)
+		ttk.Combobox(time_frame_from, textvariable=minute_var_from, values=[f"{i:02d}" for i in range(60)], width=5).pack(side=LEFT, padx=2)
+
+		# Time picker - To
+		time_frame_to = Frame(reservation_window, bg='white')
+		time_frame_to.pack(pady=5)
+		Label(time_frame_to, text="To:    ", bg='white').pack(side=LEFT)
+		hour_var_to = StringVar(reservation_window)
+		minute_var_to = StringVar(reservation_window)
+		hour_var_to.set("00")
+		minute_var_to.set("00")
+		ttk.Combobox(time_frame_to, textvariable=hour_var_to, values=[f"{i:02d}" for i in range(24)], width=5).pack(side=LEFT, padx=2)
+		ttk.Combobox(time_frame_to, textvariable=minute_var_to, values=[f"{i:02d}" for i in range(60)], width=5).pack(side=LEFT, padx=2)
 
 		def submit_reservation():
 			amenity = amenity_var.get()
-			date = date_entry.get()
-			time = time_entry.get()
-			if amenity != "Select Amenity" and date and time:
-				messagebox.showinfo("Reservation Successful", f"{amenity} reserved for {date} at {time}")
+			date = date_entry.get_date().strftime("%Y-%m-%d")
+			time_from = f"{hour_var_from.get()}:{minute_var_from.get()}"
+			time_to = f"{hour_var_to.get()}:{minute_var_to.get()}"
+			if amenity != "Select Amenity":
+				messagebox.showinfo("Reservation Successful", f"{amenity} reserved for {date} from {time_from} to {time_to}")
 				reservation_window.destroy()
 			else:
-				messagebox.showerror("Error", "Please fill all fields")
+				messagebox.showerror("Error", "Please select an amenity")
 
 		Button(reservation_window, text="Reserve", command=submit_reservation, bg='#00008B', fg='white').pack(pady=10)
-		Button(reservation_window, text="Check Availability", command=lambda: check_availability(amenity_var.get(), date_entry.get(), time_entry.get()), bg='#00008B', fg='white').pack(pady=5)
-		Button(reservation_window, text="Unreserve", command=lambda: unreserve(amenity_var.get(), date_entry.get(), time_entry.get()), bg='#00008B', fg='white').pack(pady=5)
+		Button(reservation_window, text="Check Availability", command=lambda: check_availability(amenity_var.get(), date_entry.get_date(), f"{hour_var_from.get()}:{minute_var_from.get()}", f"{hour_var_to.get()}:{minute_var_to.get()}"), bg='#00008B', fg='white').pack(pady=5)
+		Button(reservation_window, text="Unreserve", command=lambda: unreserve(amenity_var.get(), date_entry.get_date(), f"{hour_var_from.get()}:{minute_var_from.get()}", f"{hour_var_to.get()}:{minute_var_to.get()}"), bg='#00008B', fg='white').pack(pady=5)
 
-	def check_availability(amenity, date, time):
-		if amenity != "Select Amenity" and date and time:
+	def check_availability(amenity, date, time_from, time_to):
+		if amenity != "Select Amenity":
 			# Here you would typically check this against a database
 			# For this example, we'll just show a random availability
 			import random
 			is_available = random.choice([True, False])
 			if is_available:
-				messagebox.showinfo("Availability", f"The {amenity} is available on {date} at {time}")
+				messagebox.showinfo("Availability", f"The {amenity} is available on {date} from {time_from} to {time_to}")
 			else:
-				messagebox.showinfo("Availability", f"Sorry, the {amenity} is already reserved on {date} at {time}")
+				messagebox.showinfo("Availability", f"Sorry, the {amenity} is already reserved on {date} from {time_from} to {time_to}")
 		else:
-			messagebox.showerror("Error", "Please fill all fields")
+			messagebox.showerror("Error", "Please select an amenity")
 
-	def unreserve(amenity, date, time):
-		if amenity != "Select Amenity" and date and time:
+	def unreserve(amenity, date, time_from, time_to):
+		if amenity != "Select Amenity":
 			# Here you would typically remove this from a database
 			# For this example, we'll just show a message
-			messagebox.showinfo("Unreservation Successful", f"{amenity} reservation cancelled for {date} at {time}")
+			messagebox.showinfo("Unreservation Successful", f"{amenity} reservation cancelled for {date} from {time_from} to {time_to}")
 		else:
-			messagebox.showerror("Error", "Please fill all fields")
+			messagebox.showerror("Error", "Please select an amenity")
 
 	#-------------- Guests --------------------------------------------------------------------------------------------------------------------------
 	def staff():
@@ -498,7 +527,7 @@ def mainroot():
 		fl2.pack_propagate(False)
 		l1=Label(fl2,text='Time of transaction',bg='#00008B',fg='white',font='msserif 17')
 		l1.pack()
-		
+	
 		fr2=Frame(b_frame,height=38,width=1080-308,bg='white')
 		fr2.place(x=0+308,y=109)
 		fr2.pack_propagate(False)
@@ -510,7 +539,7 @@ def mainroot():
 		fl3.pack_propagate(False)
 		l1=Label(fl3,text='Ammount Paid',bg='#00008B',fg='white',font='msserif 17')
 		l1.pack()
-		
+	
 		fr3=Frame(b_frame,height=38,width=1080-308,bg='white')
 		fr3.place(x=0+308,y=150)
 		fr3.pack_propagate(False)
