@@ -1,4 +1,5 @@
-
+#Firstly to run on a new device u will have to pip install PIL,ImageTk,Image,sqlite3,tkinter,tkcalender
+#If the code doesn't run from the run button on top use the terminal and type "py main.py" to run
 from tkinter import *
 from tkinter import ttk
 import time
@@ -919,18 +920,41 @@ def mainroot():
 							cur.execute("update roomd set rstatus='Reserved' where rn = ? ",(roomn.get(),))
 							messagebox.showinfo("Successful","Room Booked successfully")
 							con.commit()
-							ask = messagebox.askyesno("Successful","Payment Successful\nDo you want to print reciept ?")
-							if ask == 'yes':
-								def createfile():
-									fl = open("reciept.txt","w")
-									fl.write("reciept will come here")
-							reserve()
 							payroot.destroy()
+							show_receipt(cid, fn.get(), ln.get(), cn.get(), em.get(), roomn.get(), nod.get(), amtpd, pmethod.get())
 						else :
 							messagebox.showwarning("Not selected","Please Select the payment method")
 					Button(payroot,text='Pay',font='msserif 12',bg='Green',fg='White',width=28,command=f).place(x=0,y=200)
 					Label(payroot,text='Your unique payment id :',font='msserif',bg='White')#.place(x=0,y=25)
 					
+		def show_receipt(cid, fname, lname, contact, email, room, days, amount, payment_method):
+			receipt_window = Toplevel(root)
+			receipt_window.title("Digital Receipt")
+			receipt_window.geometry("400x500")
+			receipt_window.configure(bg='white')
+
+			Label(receipt_window, text="Digital Receipt", font='msserif 16 bold', bg='white').pack(pady=10)
+
+			receipt_text = f"""
+			Payment ID: {cid}
+			Name: {fname} {lname}
+			Contact: {contact}
+			Email: {email}
+			Room Number: {room}
+			Number of Days: {days}
+			Total Amount: ${amount}
+			Payment Method: {payment_method}
+			Date: {now.strftime("%d %b %Y")}
+			Time: {now.strftime("%H:%M")}
+			"""
+
+			receipt_area = Text(receipt_window, wrap=WORD, width=50, height=20, font='msserif 12')
+			receipt_area.pack(padx=20, pady=10)
+			receipt_area.insert(END, receipt_text)
+			receipt_area.config(state=DISABLED)
+
+			Button(receipt_window, text="Close", command=receipt_window.destroy, font='msserif 12', bg='#00008B', fg='white').pack(pady=10)
+
 		def unreserve():
 			if (roomn.get() == 'Enter Room Number') or (roomn.get()==''):
 				messagebox.showerror('Entries not filled','Kindly Enter room Number')
