@@ -935,23 +935,21 @@ def mainroot():
 
 			Label(receipt_window, text="Digital Receipt", font='msserif 16 bold', bg='white').pack(pady=10)
 
-			receipt_text = f"""
-			Payment ID: {cid}
-			Name: {fname} {lname}
-			Contact: {contact}
-			Email: {email}
-			Room Number: {room}
-			Number of Days: {days}
-			Total Amount: ${amount}
-			Payment Method: {payment_method}
-			Date: {now.strftime("%d %b %Y")}
-			Time: {now.strftime("%H:%M")}
-			"""
+			# Create a frame to hold the receipt details
+			receipt_frame = Frame(receipt_window, bg='white')
+			receipt_frame.pack(padx=20, pady=10, anchor='w')  # Align to the left
 
-			receipt_area = Text(receipt_window, wrap=WORD, width=50, height=20, font='msserif 12')
-			receipt_area.pack(padx=20, pady=10)
-			receipt_area.insert(END, receipt_text)
-			receipt_area.config(state=DISABLED)
+			# Add labels for each piece of information
+			Label(receipt_frame, text=f"Payment ID: {cid}", bg='white').pack(anchor='w')
+			Label(receipt_frame, text=f"Name: {fname} {lname}", bg='white').pack(anchor='w')
+			Label(receipt_frame, text=f"Contact: {contact}", bg='white').pack(anchor='w')
+			Label(receipt_frame, text=f"Email: {email}", bg='white').pack(anchor='w')
+			Label(receipt_frame, text=f"Room Number: {room}", bg='white').pack(anchor='w')
+			Label(receipt_frame, text=f"Number of Days: {days}", bg='white').pack(anchor='w')
+			Label(receipt_frame, text=f"Total Amount: ${amount}", bg='white').pack(anchor='w')
+			Label(receipt_frame, text=f"Payment Method: {payment_method}", bg='white').pack(anchor='w')
+			Label(receipt_frame, text=f"Date: {now.strftime('%d %b %Y')}", bg='white').pack(anchor='w')
+			Label(receipt_frame, text=f"Time: {now.strftime('%H:%M')}", bg='white').pack(anchor='w')
 
 			Button(receipt_window, text="Close", command=receipt_window.destroy, font='msserif 12', bg='#00008B', fg='white').pack(pady=10)
 
